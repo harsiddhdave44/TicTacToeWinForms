@@ -6,6 +6,9 @@ using System.Xml;
 using MetroFramework.Forms;
 using System.Drawing;
 using System.Linq;
+using System.Net.Sockets;
+using System.Net;
+using System.Text;
 
 namespace TicTacToe
 {
@@ -19,7 +22,7 @@ namespace TicTacToe
         string path = @"D:\gamedata.xml";
         bool userturn;
         int userscore = 0, aiscore = 0, turncount = 0;
-        int pattern=-1;
+        int pattern = -1;
         List<int[]> verticalPattern = new List<int[]>();
         List<int[]> horizontalPattern = new List<int[]>();
         List<int[]> diagonalPattern = new List<int[]>();
@@ -142,10 +145,10 @@ namespace TicTacToe
             Exception gameover = new Exception();
             foreach (Control c in Controls)
             {
-                if(c is Button)
+                if (c is Button)
                 {
                     Button button_available = (Button)c;
-                    
+
                     if (button_available.Text == string.Empty)
                     {
                         ++availCount;
@@ -162,8 +165,8 @@ namespace TicTacToe
                 Random r = new Random();
                 //MessageBox.Show(r.Next(1,);
                 //Control control = available_spaces[r.Next(1, availCount)];
-                Control control=null;
-                   
+                Control control = null;
+
                 int moveNum = FindNextMove();
                 //= ChooseMove();
                 if (moveNum >= 0)
@@ -193,7 +196,7 @@ namespace TicTacToe
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
@@ -206,7 +209,7 @@ namespace TicTacToe
             pattern = -1;
             foreach (Control c in Controls)
             {
-                if(c is Button)
+                if (c is Button)
                 {
                     Button b = (Button)c; ;
                     b.Text = "";
@@ -392,7 +395,7 @@ namespace TicTacToe
         #endregion
         bool checkdraw()
         {
-            foreach(Control c in Controls)
+            foreach (Control c in Controls)
             {
                 if (c is Button)
                     if (c.Text == "")
@@ -413,7 +416,7 @@ namespace TicTacToe
         }
         int FindNextMove()
         {
-            int index=0;
+            int index = 0;
             int i2 = 0;
             pattern = -1;
             var btns = this.Controls.OfType<MetroFramework.Controls.MetroButton>();
@@ -430,14 +433,14 @@ namespace TicTacToe
                         if (b.Name.Contains(num.ToString()) && b.Text == "X")
                         {
                             targetBtns.Add(b);
-                            i2 = index-1;
+                            i2 = index - 1;
                         }
                     });
                 });
                 //button.AddRange(btns.Where(x => x.Name.Contains(num.ToString()) && x.Text == ""));
             });
-             
-            if(targetBtns.Count==0)
+
+            if (targetBtns.Count == 0)
             {
                 index = 0;
                 horizontalPattern.ForEach(s =>
@@ -445,7 +448,7 @@ namespace TicTacToe
                     index++;
                     pattern = 1;
                     s.ToList().ForEach(num =>
-                    {   
+                    {
                         //targetBtns.AddRange(btns.Where(x => x.Name.Contains(num.ToString()) && x.Text == "X"));
                         btns.ToList().ForEach(b =>
                         {
@@ -457,7 +460,7 @@ namespace TicTacToe
                         });
                     });
                 });
-                if(targetBtns.Count==0)
+                if (targetBtns.Count == 0)
                 {
                     index = 0;
                     pattern = 2;
@@ -479,11 +482,11 @@ namespace TicTacToe
                     });
                 }
             }
-            if(targetBtns.Count>1)
+            if (targetBtns.Count > 1)
             {
-                if(pattern==0)
+                if (pattern == 0)
                 {
-                    foreach(var n in verticalPattern[i2])
+                    foreach (var n in verticalPattern[i2])
                     {
                         buttonEmpty.AddRange(btns.Where(x => x.Name.Contains(n.ToString()) && x.Text == ""));
                     }
@@ -491,7 +494,7 @@ namespace TicTacToe
                 if (buttonEmpty.Count > 0)
                 {
                     Random r = new Random();
-                    int i = r.Next(0, buttonEmpty.Count-1);
+                    int i = r.Next(0, buttonEmpty.Count - 1);
                     return i;
                 }
                 //else
@@ -535,7 +538,7 @@ namespace TicTacToe
         {
             int count = 0;
             int listIndex = 0;
-            MetroFramework.Controls.MetroButton button=null;
+            MetroFramework.Controls.MetroButton button = null;
             foreach (var btn in Controls)
             {
                 #region Horizontal Check
@@ -614,7 +617,7 @@ namespace TicTacToe
                 }
                 #endregion
             }
-            
+
             if (count >= 1)
             {
                 return GetNextMovePoint(listIndex);
@@ -647,10 +650,10 @@ namespace TicTacToe
                 }
                 catch (Exception)
                 {
-                   
+
                 }
             }//Vertical Pattern
-            else if(pattern==1)
+            else if (pattern == 1)
             {
                 try
                 {
@@ -671,10 +674,10 @@ namespace TicTacToe
                 }
                 catch (Exception)
                 {
-                 
+
                 }
             }//Diagonal Pattern
-            else if(pattern==2)
+            else if (pattern == 2)
             {
                 try
                 {
@@ -695,7 +698,7 @@ namespace TicTacToe
                 }
                 catch (Exception)
                 {
-                    
+
                 }
             }
             return -1;
@@ -705,10 +708,10 @@ namespace TicTacToe
             Exception used = new Exception();
             Button b = (Button)sender;
             //c.Connect("X pos=" + b.Name);
-            
+
             try
             {
-                if (b.Text.Contains("X") || b.Text.Contains("O")) 
+                if (b.Text.Contains("X") || b.Text.Contains("O"))
                     throw used;
                 if (userturn)
                 {
@@ -727,7 +730,7 @@ namespace TicTacToe
                             else
                                 disablebuttons();
                         }
-                        else if(checkdraw())
+                        else if (checkdraw())
                         {
                             if (MessageBox.Show("It is a DRAW !!\nWant to play again ??", "Draw", MessageBoxButtons.YesNo) == DialogResult.Yes)
                             {
@@ -744,7 +747,7 @@ namespace TicTacToe
             }
             catch (Exception ex)
             {
-                
+
             }
 
         }
