@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace TicTacToe
@@ -21,24 +17,22 @@ namespace TicTacToe
         {
             byte[] d = new byte[data.Length];
             d = Encoding.ASCII.GetBytes(data);
-            IPHostEntry ip=Dns.GetHostEntry(Dns.GetHostName());
+            IPHostEntry ip = Dns.GetHostEntry(Dns.GetHostName());
             ipAdd = ip.AddressList[1];
             tcpclnt = new TcpClient();
-            //while(!tcpclnt.Connected)
-            tcpclnt.Connect("127.0.0.1", 4444);
+            while (!tcpclnt.Connected)
+                tcpclnt.Connect("127.0.0.1", 4444);
             //listen.Stop();
 
             netstream = tcpclnt.GetStream();
-            netstream.Write(d,0,d.Length);
-            MessageBox.Show("WROTE" +  d.ToString());
-            netstream.Close();              
+            netstream.Write(d, 0, d.Length);
+            MessageBox.Show("WROTE" + d.ToString());
+            netstream.Close();
         }
 
-        
-        
         public void listener()
         {
-            listen = new TcpListener(IPAddress.Parse("127.0.0.1"),4444);
+            listen = new TcpListener(IPAddress.Parse("127.0.0.1"), 4444);
             listen.Start();
             s = listen.AcceptSocket();
             if (s != null)
@@ -50,6 +44,6 @@ namespace TicTacToe
             string d = Encoding.ASCII.GetString(data);
             MessageBox.Show(d);
         }
- 
+
     }
 }
